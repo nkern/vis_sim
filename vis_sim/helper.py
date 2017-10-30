@@ -6,7 +6,7 @@ Helper class and functions
 """
 import healpy as hp
 import numpy as np
-
+from astropy.time import Time
 
 class Helper(object):
     """
