@@ -74,7 +74,7 @@ class Sky_Model(Helper):
         """
 
         # Load Sky 
-        sky_data    = np.load(sky_file)
+        sky_data    = np.load(skyfile)
         sky_models  = sky_data['sky']
         sky_freqs   = sky_data['freqs']
         sky_freq_ax = 2
