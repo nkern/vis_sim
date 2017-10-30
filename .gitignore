@@ -1,5 +1,7 @@
 *.pyc
 *__pycache__
 *.swp
-
+build
+dist
+vis_sim.egg-info
 

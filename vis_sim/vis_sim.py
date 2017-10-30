@@ -40,18 +40,18 @@ class Vis_Sim(Sky_Model, Beam_Model):
 
     """
 
-    def init_GSM(self, gsmfile, **kwargs):
+    def init_sky(self, skyfile, **kwargs):
     	"""
-    	initialize GSM. See GlobalSkyModel class doc-string for info on arguments
+    	initialize sky model. See Sky_Model class doc-string for info on arguments
     	"""
-    	super(Vis_Sim, self).__init__(gsmfile, **kwargs)
+    	super(Vis_Sim, self).__init__(skyfile, **kwargs)
 
     def init_beam(self, beamfile, **kwargs):
         """
         initialize beam. See Beam_Model class doc-string for info on arguments
         """
         # initialize Beam_Model class
-        super(GlobalSkyModel, self).__init__(beamfile, **kwargs)
+        super(Sky_Model, self).__init__(beamfile, **kwargs)
 
         # get polarization parameters
         self.pols = self.beam_pols.copy()
@@ -68,20 +68,19 @@ class Vis_Sim(Sky_Model, Beam_Model):
         self.beam_coeffs = np.zeros((self.red_info.nAntenna, self.Npols, self.Nfreqs, self.Npcomps))
 
 
-    def __init__(self, calfile, gsmfile, beamfile, info_kwargs={}, sky_nside=None, freqs=None,
+    def __init__(self, calfile, skyfile, beamfile, info_kwargs={}, sky_nside=None, freqs=None,
                  onepol=False, pol=0, verbose=False):
         """
-		Redundant Array Visibility Simulation with the Global Sky Model
-		Inherits from classes <GlobalSkyModel> and <Beam_Model>
+        Visibility Simulation
 
-		Input:
-		------
-		calfile : str
-			name of an aipy calfile w/o .py suffix
-			within your current path
+        Input:
+        ------
+        calfile : str
+                name of an aipy calfile w/o .py suffix
+                within your current path
 
-        gsmfile : str
-            data for gsmfile in .npz format
+        skyfile : str
+            data for skyfile in .npz format
 
         beamfile : str
             data for beamfile as a pyuvdata .beamfits file
@@ -110,8 +109,8 @@ class Vis_Sim(Sky_Model, Beam_Model):
         """
         self.print_message("...initializing visibility simulation", type=1, verbose=verbose)
 
-        # Initialize GSM
-        self.init_GSM(gsmfile, sky_nside=sky_nside, freqs=freqs, verbose=verbose, onepol=onepol)
+        # Initialize sky
+        self.init_sky(skyfile, sky_nside=sky_nside, freqs=freqs, verbose=verbose, onepol=onepol)
 
         # Assign variables
         self.calfile     = calfile
@@ -294,7 +293,7 @@ class Vis_Sim(Sky_Model, Beam_Model):
             uvd.integration_time   = 10.7
             uvd.lst_array          = np.repeat(np.array(map(lambda x: self.JD2LST(self.loc, x), JD_array))[:, np.newaxis], Nbls, axis=1).ravel()
             uvd.nsample_array      = np.ones_like(uvd.data_array, dtype=np.float)
-            uvd.object_name        = "GSM"
+            uvd.object_name        = ""
             uvd.phase_type         = "drift"
             uvd.polarization_array = np.array(map(lambda x: {"XX":-5,"YY":-6,"XY":-7,"YX":-8}[x], self.xpols))
             uvd.spw_array          = np.array([0])

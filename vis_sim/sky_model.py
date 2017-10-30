@@ -26,28 +26,28 @@ class Sky_Model(Helper):
 
     class for handling of sky model data
     """
-    def __init__(self, gsmfile, sky_nside=None, freqs=None, verbose=False, onepol=False):
+    def __init__(self, skyfile, sky_nside=None, freqs=None, verbose=False, onepol=False):
         """
-        load global sky model
+        load sky model
         and optionally interpolate to specific nside
         spatial resolution and frequency resolution
 
         Input:
         -------
-        gsmfile : str
-            path to gsm data file as a .npz file
+        skyfile : str
+            path to sky data file as a .npz file
             with "sky" as multifrequency sky and
             "freqs" as frequency channels in MHz.
             sky is assumed to be in galactic coordinates.
 
         sky_nside : int, default=None
-            downsample GSM to desired healpix nside
+            downsample sky to desired healpix nside
             resolution (not recommended).
-            If None, default is what the gsmfile provides
+            If None, default is what the skyfile provides
 
         freqs : ndarray, default=None
             frequency channels of sky model in MHz. If None, default
-            is what the gsmfile provides
+            is what the skyfile provides
 
         onepol : bool, default=False
             if True, keep only stokes I map
@@ -58,7 +58,7 @@ class Sky_Model(Helper):
         self.sky_models : ndarray, shape=(2, 2, Nfreqs, Npix)
             first two axes are for 4-pol stokes parameters
             [ [I+Q, U+iV], [U-iV, I-Q] ]
-            (multi-frequency) global sky model in healpix
+            (multi-frequency) sky sky model in healpix
             using RING ordering in units of MJy-str
 
         self.freqs : ndarray, shape=(Nfreqs,)
@@ -73,10 +73,10 @@ class Sky_Model(Helper):
             in galactic coordinates
         """
 
-        # Load GSM Sky 
-        GSM_data    = np.load(gsmfile)
-        sky_models  = GSM_data['sky']
-        sky_freqs   = GSM_data['freqs']
+        # Load Sky 
+        sky_data    = np.load(sky_file)
+        sky_models  = sky_data['sky']
+        sky_freqs   = sky_data['freqs']
         sky_freq_ax = 2
 
         # check sky_models are appropriate shape
@@ -114,7 +114,7 @@ class Sky_Model(Helper):
         self.onepol     = onepol
         self.sky_freq_ax = sky_freq_ax
 
-    def GSM_freq_interp(self, freqs):
+    def sky_freq_interp(self, freqs):
         """
         1D interpolation of sky models along frqeuency axis
 
@@ -128,7 +128,7 @@ class Sky_Model(Helper):
                     save=False, fname=None, plot_kwargs={'cmap':'viridis'},
                     cbar_kwargs={}, basemap=True, rot=None):
         """
-        Plot Global Sky Model in orthographic coordinates given observer
+        Plot Sky Model in orthographic coordinates given observer
         location and date
 
         Input:
@@ -137,7 +137,7 @@ class Sky_Model(Helper):
             relevant subattributes are loc.lon, loc.lat and loc.date
 
         skymap : ndarray, shape=(Npix,)
-            GSM map in healpix RING ordered
+            sky map in healpix RING ordered
 
         ax : matplotlib axis object, default=None
             feed a previously defined axis if desired
