@@ -10,21 +10,21 @@ Code Repo : https://github.com/nkern/vis_sim
 
 
 ### Code Dependencies:
-`healpy`
+healpy
 
-`ephem`
+ephem
 
-`pyuvdata`
+pyuvdata
 
-`aipy`
+aipy
 
-`hera_cal`
+hera_cal
 
-`matplotlib.Basemap`
+matplotlib.Basemap
 
-`astropy`
+astropy
 
-`scipy`
+scipy
 
 
 ### Installation:
