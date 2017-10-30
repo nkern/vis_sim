@@ -1,16 +1,12 @@
 import sys
 import os
-import subprocess
+from setuptools import setup
+import json
+from vis_sim import version
 
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup
-
-# write git-hash
-githash = subprocess.check_output(["git", "describe", "--always"]).strip()
-with open('vis_sim/hash.txt', 'w') as f:
-    f.write(str(githash))
+data = [version.git_hash]
+with open(os.path.join('vis_sim', 'GIT_INFO'), 'w') as outfile:
+    json.dump(data, outfile)
 
 # setup vars
 setup(
@@ -20,6 +16,8 @@ setup(
     description     = 'radio interferometric visibility simulator',
     author          = 'Nick Kern',
     url             = "http://github.com/nkern/vis_sim",
+    include_package_data = True,
+    package_data    = {'vis_sim': ['GIT_INFO']},
     packages        = ['vis_sim']
     )
 
