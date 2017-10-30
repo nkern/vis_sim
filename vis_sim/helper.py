@@ -8,6 +8,7 @@ import healpy as hp
 import numpy as np
 from astropy.time import Time
 
+
 class Helper(object):
     """
     Helper
@@ -40,7 +41,7 @@ class Helper(object):
             lst = t.sidereal_time('apparent', longitude=longitude)
         return lst.value
 
-    def healpix_interp(self, maps, map_nside, theta, phi, nest=False):
+    def healpix_interp(self, maps, map_nside, theta, phi, nest=False, numba=False):
         """
         healpix map bi-linear interpolation
 
@@ -60,18 +61,25 @@ class Helper(object):
             desired interpolatin points in radians
 
         """
+        # get ordering
         if nest == True:
             r = hp._healpy_pixel_lib._get_interpol_nest(map_nside, theta, phi)
         else:
             r = hp._healpy_pixel_lib._get_interpol_ring(map_nside, theta, phi)
+
+        # get arrays
         p=np.array(r[0:4])
         w=np.array(r[4:8])
+
         if maps.ndim == 2:
-            return np.einsum("ijk,jk->ik", maps[:, p], w)
+            d = np.take(maps, p, axis=1)
+            return np.einsum("ijk,jk->ik", d, w)
         elif maps.ndim == 3:
-            return np.einsum("hijk,jk->hik", maps[:, :, p], w)
+            d = np.take(maps, p, axis=2)
+            return np.einsum("hijk,jk->hik", d, w)
         elif maps.ndim == 4:
-            return np.einsum("ghijk,jk->ghik", maps[:, :, :, p], w)
+            d = np.take(maps, p, axis=3)
+            return np.einsum("ghijk,jk->ghik", d, w)
 
     def rotate_map(self, nside, rot=None, coord=None, theta=None, phi=None, interp=False,
                    inv=True):

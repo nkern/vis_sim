@@ -19,7 +19,6 @@ Code Repo : https://github.com/nkern/vis_sim
 - [astropy](http://www.astropy.org/)
 - [scipy](https://www.scipy.org/)
 
-
 ### Installation:
 Clone this directory and run the setup script as
 ```bash
