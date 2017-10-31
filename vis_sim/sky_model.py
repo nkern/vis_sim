@@ -107,12 +107,24 @@ class Sky_Model(Helper):
         # Assign variables to class
         self.sky_nside  = default_sky_nside
         self.sky_npix   = 12 * default_sky_nside**2
+        self.skypix_sa  = 4*np.pi / self.sky_npix
         self.sky_models = sky_models
         self.sky_freqs  = sky_freqs
         self.sky_theta  = theta
         self.sky_phi    = phi
         self.onepol     = onepol
         self.sky_freq_ax = sky_freq_ax
+        self.bandwidth  = np.median(self.sky_freqs[1:] - self.sky_freqs[:-1])
+
+    def generate_noise_map(self, Tnoise, size):
+        """
+        generate uncorrelated Gaussian noise maps of temperature Tnoise
+        with shape of self.sky_models
+
+        Tnoise : float
+            temperature of thermal noise
+        """
+        return np.random.normal(loc=0.0, scale=Tnoise, size=size)
 
     def sky_freq_interp(self, freqs):
         """

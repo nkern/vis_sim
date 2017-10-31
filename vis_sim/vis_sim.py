@@ -170,9 +170,18 @@ class Vis_Sim(Sky_Model, Beam_Model):
     	if output == True:
     		return self.ant_beam_models
 
+
+    def generate_vis_noise(self, Tnoise, freqs, beam_sa, size, bandwidth=1e6, int_time=10.7):
+        """
+        Generate vis noise via radiometer equation
+        """
+        Vnoise_jy = Tnoise * self.T2jy(freqs, beam_sa) / (bandwidth * int_time)
+        return np.random.normal(loc=0.0, scale=1/np.sqrt(2), size=size) * Vnoise_jy
+
+
     def sim_obs(self, bl_array, JD_array, pool=None,
                 write_miriad=False, fname=None, clobber=False, one_beam_model=True,
-                interp=True):
+                interp=True, Tnoise=None, fast_noise=False):
         """
 		Simulate a visibility observation of the sky
 
@@ -235,14 +244,20 @@ class Vis_Sim(Sky_Model, Beam_Model):
             else:
                 M = pool.map
 
-            if one_beam_model == True:
+            # add noise
+            if Tnoise is None or fast_noise is True:
+                sky_models = self.sky_models
+            else:
+                sky_models = self.sky_models + self.generate_noise_map(Tnoise, self.sky_models.shape)
+
+            if one_beam_model is True:
                 if self.onepol is True:
-                    vis = np.einsum("ijkl, ikl -> ijk", self.proj_beam_phs**2, self.sky_models)
+                    vis = np.einsum("ijkl, ikl -> ijk", self.proj_beam_phs**2, sky_models)
                 else:
-                    vis = np.einsum("ijkl, imkl, mjkl -> imjk", self.proj_beam_phs, self.sky_models, self.proj_beam_phs)
+                    vis = np.einsum("ijkl, imkl, mjkl -> imjk", self.proj_beam_phs, sky_models, self.proj_beam_phs)
             else:
                 vis = np.array(map(lambda x: np.einsum("ijk, jk, ljk -> ilj", self.proj_beam_phs[rel_ant2ind[x[1][0]]],
-                      self.sky_models, self.proj_beam_phs[rel_ant2ind[x[1][1]]]), enumerate(str_bls)))
+                      sky_models, self.proj_beam_phs[rel_ant2ind[x[1][1]]]), enumerate(str_bls)))
 
             self.vis_data.append(vis)
 
@@ -263,6 +278,10 @@ class Vis_Sim(Sky_Model, Beam_Model):
         else:
             self.vis_data /= self.ant_beam_sa[:, :, :, np.newaxis, :]
             self.vis_data_shape = "(2, 2, Nbls, Ntimes, Nfreqs)"
+
+        if fast_noise is True and Tnoise is not None:
+            self.vis_data += self.generate_vis_noise(Tnoise, self.freqs*1e6, self.ant_beam_sa.squeeze(), self.vis_data.shape,
+                                                     bandwidth=self.bandwidth*1e6, int_time=10.7)
 
         # write to file
         if write_miriad == True:

@@ -16,6 +16,9 @@ class Helper(object):
 
     Helper routines
     """
+    c  = 2.99792458e8
+    kb = 1.38064852e-23
+
     def print_message(self, message, type=0, verbose=True):
         """
         print message to stdout
@@ -40,6 +43,19 @@ class Helper(object):
             t = Time(JD, format="jd")
             lst = t.sidereal_time('apparent', longitude=longitude)
         return lst.value
+
+    def jy2T(self, freqs, beam_sa):
+        """
+        jansky to kelvin
+        """
+        lams = self.c / freqs
+        return 1e-23 * lams**2 / (2 * self.kb * beam_sa) * 1e3
+
+    def T2jy(self, freqs, beam_sa):
+        """
+        kelvin to jansky
+        """
+        return 1e3 / (self.jy2T(freqs, beam_sa))
 
     def healpix_interp(self, maps, map_nside, theta, phi, nest=False, numba=False):
         """
