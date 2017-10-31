@@ -1,5 +1,6 @@
 ## vis_sim : Radio Interferometric Visibility Simulator
 
+<img src='docs/imgs/sky.png' width=200px/> + <img src='docs/imgs/beam.png' width=200px/> + <img src='docs/imgs/fringe.png' width=200px/> = <img src='docs/vis_amp.png' width=200px/>
 
 ### Version: 0.1
 Code Repo : https://github.com/nkern/vis_sim
