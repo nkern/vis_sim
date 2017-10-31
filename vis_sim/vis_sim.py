@@ -174,6 +174,7 @@ class Vis_Sim(Sky_Model, Beam_Model):
     def generate_vis_noise(self, Tnoise, freqs, beam_sa, size, bandwidth=1e6, int_time=10.7):
         """
         Generate vis noise via radiometer equation
+        from hera_sim
         """
         Vnoise_jy = Tnoise * self.T2jy(freqs, beam_sa) / (bandwidth * int_time)
         return np.random.normal(loc=0.0, scale=1/np.sqrt(2), size=size) * Vnoise_jy
